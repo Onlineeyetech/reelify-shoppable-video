@@ -1,0 +1,48 @@
+<div
+  class="reelify-block"
+  data-reelify-root
+  data-limit="{{ block.settings.limit }}"
+  data-playlist="{{ block.settings.playlist_id | escape }}"
+  data-heading="{{ block.settings.heading | escape }}"
+  data-autoplay="{{ block.settings.autoplay }}"
+  data-loop="{{ block.settings.loop }}"
+  data-show-product="{{ block.settings.show_product }}"
+  data-show-volume="{{ block.settings.show_volume }}"
+  data-show-arrows="{{ block.settings.show_arrows }}"
+  data-design="{{ block.settings.design }}"
+  data-reelify-core="{{ 'reelify-core.js' | asset_url }}"
+  style="--reel-desktop-count: {{ block.settings.desktop_count }}; --reel-mobile-count: {{ block.settings.mobile_count }};"
+>
+  <div class="reelify-block__inner">
+    <div class="reelify-block__header"><h2 class="reelify-block__heading">{{ block.settings.heading }}</h2></div>
+    <div class="reelify-reels" data-reelify-list aria-live="polite"></div>
+    {% if block.settings.show_arrows %}
+      <div class="reelify-slider-controls" aria-label="Reel navigation">
+        <button class="reelify-slider-arrow" type="button" data-reel-prev aria-label="Previous reels">←</button>
+        <button class="reelify-slider-arrow" type="button" data-reel-next aria-label="Next reels">→</button>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Reelify Reels",
+  "target": "section",
+  "stylesheet": "reelify.css",
+  "javascript": "reelify.js",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop the Reel" },
+    { "type": "range", "id": "limit", "label": "Maximum Reels loaded", "min": 1, "max": 24, "step": 1, "default": 6 },
+    { "type": "text", "id": "playlist_id", "label": "Playlist ID (optional)", "info": "Copy a playlist ID from Reelify → Playlists. Leave blank to show all active Reels." },
+    { "type": "range", "id": "desktop_count", "label": "Reels visible per row — desktop", "min": 2, "max": 6, "step": 1, "default": 4 },
+    { "type": "select", "id": "mobile_count", "label": "Reels visible per row — mobile (1 or 2)", "options": [ { "value": "1", "label": "1 Reel" }, { "value": "2", "label": "2 Reels" } ], "default": "1" },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay visible videos", "default": true },
+    { "type": "checkbox", "id": "loop", "label": "Loop videos", "default": true },
+    { "type": "checkbox", "id": "show_product", "label": "Show product details", "default": true },
+    { "type": "checkbox", "id": "show_volume", "label": "Show volume button", "default": true },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show slider arrows", "default": true },
+    { "type": "select", "id": "design", "label": "Card design", "options": [ { "value": "classic", "label": "Classic" }, { "value": "editorial", "label": "Editorial" }, { "value": "commerce", "label": "Commerce" }, { "value": "social", "label": "Social" } ], "default": "classic" }
+  ]
+}
+{% endschema %}

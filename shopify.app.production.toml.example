@@ -1,0 +1,18 @@
+client_id = "YOUR_PRODUCTION_APP_CLIENT_ID"
+name = "Reelify: Shoppable Video"
+application_url = "https://YOUR-PRODUCTION-DOMAIN"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = false
+
+[auth]
+redirect_urls = [ "https://YOUR-PRODUCTION-DOMAIN/auth/callback" ]
+
+[access_scopes]
+scopes = "write_products,write_metaobjects,write_metaobject_definitions,write_files,read_files"
+
+[app_proxy]
+url = "https://YOUR-PRODUCTION-DOMAIN/app-proxy"
+prefix = "apps"
+subpath = "reelify"

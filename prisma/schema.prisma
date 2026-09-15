@@ -1,0 +1,172 @@
+// This is your Prisma schema file.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model Reel {
+  id            String     @id @default(cuid())
+  shop          String
+  title         String
+  videoUrl      String
+  thumbnailUrl  String?
+  shopifyFileId String?
+  status        ReelStatus @default(DRAFT)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  products   ReelProduct[]
+  playlists  PlaylistReel[]
+  videoPages VideoPageReel[]
+  analytics  AnalyticsEvent[]
+
+  @@index([shop])
+  @@index([status])
+  @@index([shopifyFileId])
+}
+
+model ReelProduct {
+  id        String   @id @default(cuid())
+  reelId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  reel Reel @relation(fields: [reelId], references: [id], onDelete: Cascade)
+
+  @@unique([reelId, productId])
+  @@index([productId])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  shop        String
+  name        String
+  description String?
+  slug        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reels     PlaylistReel[]
+  pages     VideoPage[]
+  analytics AnalyticsEvent[]
+
+  @@unique([shop, slug])
+  @@index([shop])
+}
+
+model PlaylistReel {
+  id         String   @id @default(cuid())
+  playlistId String
+  reelId     String
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  reel     Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, reelId])
+  @@index([playlistId, position])
+}
+
+model VideoPage {
+  id         String   @id @default(cuid())
+  shop       String
+  title      String
+  slug       String
+  playlistId String?
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  playlist Playlist?       @relation(fields: [playlistId], references: [id], onDelete: SetNull)
+  reels    VideoPageReel[]
+
+  @@unique([shop, slug])
+  @@index([shop])
+}
+
+model VideoPageReel {
+  id        String   @id @default(cuid())
+  pageId    String
+  reelId    String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  page VideoPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  reel Reel      @relation(fields: [reelId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, reelId])
+  @@index([pageId, position])
+}
+
+model DesignPreset {
+  id         String   @id @default(cuid())
+  shop       String
+  name       String
+  key        String
+  configJson String
+  isActive   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([shop, key])
+  @@index([shop])
+}
+
+model AppSetting {
+  id        String   @id @default(cuid())
+  shop      String
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([shop, key])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  shop       String
+  reelId     String?
+  playlistId String?
+  type       String
+  sessionKey String?
+  createdAt  DateTime @default(now())
+
+  reel     Reel?     @relation(fields: [reelId], references: [id], onDelete: SetNull)
+  playlist Playlist? @relation(fields: [playlistId], references: [id], onDelete: SetNull)
+
+  @@index([shop, createdAt])
+  @@index([shop, type])
+  @@index([reelId, type])
+}
+
+enum ReelStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
