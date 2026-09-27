@@ -12,7 +12,7 @@ node_modules
 /prisma/dev.sqlite
 /prisma/dev.sqlite-journal
 database.sqlite
-
+/prisma/migrations_sqlite_backup
 .env
 .env.*
 
